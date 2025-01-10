@@ -1,21 +1,14 @@
 const fs = require('fs');
 
-function CalcularFaturamento(faturamentoMensal) {
-    let faturamentoValido = [];
+function CalcularFaturamento(dados) {
+    const faturamentoValido = dados.filter(dia => dia.valor !== 0).map(dia => dia.valor);
 
+    const faturamentoMaximo = Math.max(...faturamentoValido)
+    const menorFaturamento = Math.min(...faturamentoValido)
+    const faturamentoMensalTotal = faturamentoValido.reduce((a, b) => a + b, 0)
+    const mediaMensal = (faturamentoMensalTotal / faturamentoValido.length).toFixed(2)
 
-    faturamentoValido = faturamentoMensal.filter(valor => valor !== 0);
-
-
-    const faturamentoMaximo = Math.max(...faturamentoValido);
-    const menorFaturamento = Math.min(...faturamentoValido);
-
-
-    const faturamentoMensalTotal = faturamentoValido.reduce((a, b) => a + b, 0);
-    const mediaMensal = (faturamentoMensalTotal / faturamentoValido.length).toFixed(2);
-
-
-    const diasAcimaMedia = faturamentoMensal.filter(dia => dia > mediaMensal).length;
+    const diasAcimaMedia = faturamentoValido.filter(dia => dia > mediaMensal).length;
 
     // Retorna os resultados
     return {
@@ -27,15 +20,13 @@ function CalcularFaturamento(faturamentoMensal) {
 }
 
 
-fs.readFile('faturamento.json', 'utf-8', (err, data) => {
+fs.readFile('dados.json', 'utf-8', (err, data) => {
     if (err) {
         console.error("Erro ao ler o arquivo JSON:", err);
         return;
     }
 
-
-    const { faturamentoMensal } = JSON.parse(data);
-
+    const faturamentoMensal = JSON.parse(data);
     const resultados = CalcularFaturamento(faturamentoMensal);
 
     // Exibe os resultados
